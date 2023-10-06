@@ -8,25 +8,43 @@ class MenuItem {
 
   MenuItem(this.name, this.price, this.imagePath, {this.quantity = 0});
 
-  void addToCart() => quantity++;
+  void addToCart() {
+    quantity++;
+  }
 
   void removeFromCart() {
-    if (quantity > 1) {
+    if (quantity > 0) {
       quantity--;
-    } else {
-      quantity = 0;
     }
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pocha Cinema 🍿',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData.dark().copyWith(
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.black,
+        ),
+        textTheme: TextTheme(
+          bodyText1: TextStyle(
+            fontFamily: 'NotoSansKR', // 폰트 패밀리 설정
+            color: Colors.white,
+            fontSize: 16, // 원하는 폰트 크기 설정
+          ),
+          bodyText2: TextStyle(
+            fontFamily: 'NotoSansKR', // 폰트 패밀리 설정
+            color: Colors.white,
+            fontSize: 14, // 원하는 폰트 크기 설정
+          ),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'ICE-POCHA'),
     );
@@ -53,50 +71,74 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<MenuItem> cart = [];
   bool isCartVisible = false;
 
+  double calculateTotal() {
+    double total = 0.0;
+    for (var item in cart) {
+      total += item.price * item.quantity;
+    }
+    return total;
+  }
+
   void toggleCartVisibility() {
     setState(() {
       isCartVisible = !isCartVisible;
     });
   }
 
-  MenuItem? findCartItem(MenuItem item) {
-    return cart.firstWhere(
+  MenuItem findCartItem(MenuItem item) {
+    final cartItem = cart.firstWhere(
       (cartItem) => cartItem.name == item.name,
       orElse: () => MenuItem('', 0.0, ''),
     );
+    return cartItem;
   }
 
   void addToCart(MenuItem item) {
-    final existingItemIndex = cart.indexWhere((cartItem) =>
-        cartItem.name == item.name && cartItem.imagePath == item.imagePath);
+    final existingItem = findCartItem(item);
 
-    if (existingItemIndex != -1) {
-      cart[existingItemIndex].addToCart();
+    if (existingItem.name != '') {
+      setState(() {
+        existingItem.addToCart();
+      });
     } else {
-      cart.add(MenuItem(item.name, item.price, item.imagePath, quantity: 1));
+      setState(() {
+        final newItem =
+            MenuItem(item.name, item.price, item.imagePath, quantity: 1);
+        cart.add(newItem);
+      });
     }
-
-    setState(() {});
   }
 
   void removeFromCart(MenuItem item) {
     final existingItem = findCartItem(item);
 
     if (existingItem != null) {
-      existingItem.removeFromCart();
-      if (existingItem.quantity == 0) {
-        cart.remove(existingItem);
-      }
+      setState(() {
+        existingItem.removeFromCart();
+        if (existingItem.quantity == 0) {
+          cart.remove(existingItem);
+        }
+      });
     }
-
-    setState(() {});
   }
 
-  double calculateTotal() =>
-      cart.fold(0, (total, item) => total + item.price * item.quantity);
+  String formatNumberWithCommas(int number) {
+    String formatted = number.toString();
+    if (number >= 1000) {
+      final RegExp regex = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+      formatted = formatted.replaceAllMapped(
+        regex,
+        (Match match) => '${match[1]},',
+      );
+    }
+    return formatted;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final String formattedTotal =
+        formatNumberWithCommas(calculateTotal().toInt());
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -119,29 +161,44 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (context, index) {
                 final item = menuItems[index];
                 return GestureDetector(
-                  onTap: () => addToCart(item),
+                  onTap: () {
+                    addToCart(item);
+                  },
                   child: Card(
                     elevation: 3,
+                    color: Colors.black,
                     child: Column(
                       children: <Widget>[
                         Expanded(
-                          child: Image.asset(
-                            item.imagePath, // 이미지 경로는 런타임에 결정되므로 const 사용 불가
-                            fit: BoxFit.cover,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(item.imagePath),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            item.name, // 텍스트는 런타임에 결정되므로 const 사용 불가
-                            style: TextStyle(fontSize: 18),
+                            item.name,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontFamily: 'NotoSansKR',
+                            ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            '${item.price.toInt()} 원', // 텍스트는 런타임에 결정되므로 const 사용 불가
-                            style: TextStyle(fontSize: 16),
+                            '${formatNumberWithCommas(item.price.toInt())} 원',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontFamily: 'NotoSansKR',
+                            ),
                           ),
                         ),
                       ],
@@ -157,20 +214,42 @@ class _MyHomePageState extends State<MyHomePage> {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             child: Card(
-              color: Colors.white,
+              color: Colors.black,
               child: ListView.builder(
                 itemCount: cart.length > 3 ? 3 : cart.length,
                 itemBuilder: (context, index) {
                   final item = cart[index];
                   return ListTile(
-                    leading: Image.asset(
-                        item.imagePath), // 이미지 경로는 런타임에 결정되므로 const 사용 불가
-                    title: Text(item.name), // 텍스트는 런타임에 결정되므로 const 사용 불가
-                    subtitle:
-                        Text('${item.price.toInt()} 원 x ${item.quantity}'),
+                    leading: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(item.imagePath),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      width: 60,
+                      height: 60,
+                    ),
+                    title: Text(
+                      item.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontFamily: 'NotoSansKR',
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${formatNumberWithCommas(item.price.toInt())} 원 x ${item.quantity}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontFamily: 'NotoSansKR',
+                      ),
+                    ),
                     trailing: IconButton(
                       icon: Icon(Icons.remove),
                       onPressed: () => removeFromCart(item),
+                      color: Colors.white,
                     ),
                   );
                 },
@@ -178,8 +257,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Text(
-            '총 금액: ${calculateTotal().toInt()} 원',
-            style: const TextStyle(fontSize: 24),
+            '총 금액: ${formattedTotal} 원',
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.white,
+              fontFamily: 'NotoSansKR',
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -187,8 +270,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text('주문 완료'),
-                    content: Text('${calculateTotal().toInt()} 원 주문이 완료되었습니다.'),
+                    title: Text(
+                      '주문 완료',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansKR',
+                        color: Colors.black, // 글자 색상을 검정색으로 변경
+                      ),
+                    ),
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${formattedTotal}원 주문이 완료되었습니다.',
+                          style: TextStyle(
+                            fontFamily: 'NotoSansKR',
+                            color: Colors.black, // 글자 색상을 검정색으로 변경
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '(잘못된 주문은 카운터에 문의 바랍니다.)',
+                          style: TextStyle(
+                            fontFamily: 'NotoSansKR',
+                            color: Colors.black, // 글자 색상을 검정색으로 변경
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -197,14 +307,27 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                           Navigator.of(context).pop();
                         },
-                        child: const Text('확인'),
+                        child: Text(
+                          '확인',
+                          style: TextStyle(
+                            color: Colors.black, // 버튼 텍스트 색상을 검정색으로 변경
+                            fontSize: 18,
+                            fontFamily: 'NotoSansKR',
+                          ),
+                        ),
                       ),
                     ],
                   );
                 },
               );
             },
-            child: const Text('주문하기', style: TextStyle(fontSize: 18)),
+            child: Text(
+              '주문하기',
+              style: TextStyle(
+                fontSize: 18,
+                fontFamily: 'NotoSansKR',
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               primary: Colors.green,
               onPrimary: Colors.white,
