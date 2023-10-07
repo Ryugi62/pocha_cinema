@@ -29,10 +29,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pocha Cinema 🍿',
       theme: ThemeData.dark().copyWith(
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: Colors.black,
         ),
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyText1: TextStyle(
             fontFamily: 'NotoSansKR',
             color: Colors.white,
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title});
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -70,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<MenuItem> cart = [];
   bool isCartVisible = false;
-  Color cardColor = Colors.white;
 
   double calculateTotal() {
     return cart.fold(0.0, (total, item) => total + item.price * item.quantity);
@@ -133,10 +132,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: Colors.black,
         actions: [
           IconButton(
             onPressed: toggleCartVisibility,
-            icon: Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart),
           ),
         ],
       ),
@@ -151,23 +151,20 @@ class _MyHomePageState extends State<MyHomePage> {
               itemCount: menuItems.length,
               itemBuilder: (context, index) {
                 final item = menuItems[index];
+
                 return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      cardColor = Colors.white;
-                    });
-                    addToCart(item);
-                  },
                   child: Card(
-                    elevation: cardColor == Colors.white ? 3 : 0,
-                    color: cardColor,
+                    elevation: 0, // No elevation when not selected
                     child: InkWell(
-                      splashColor: Colors.green,
+                      splashColor: Colors.black.withAlpha(50),
+                      onTap: () {
+                        addToCart(item);
+                      },
                       child: Column(
                         children: <Widget>[
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(3),
                                 topRight: Radius.circular(3),
                               ),
@@ -185,9 +182,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               item.name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
-                                color: Colors.black,
+                                color: Colors.black87,
                                 fontFamily: 'NotoSansKR',
                               ),
                             ),
@@ -196,9 +193,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               '${formatNumberWithCommas(item.price.toInt())} 원',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: Colors.black87,
                                 fontFamily: 'NotoSansKR',
                               ),
                             ),
@@ -235,7 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     title: Text(
                       item.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white,
                         fontFamily: 'NotoSansKR',
@@ -243,15 +240,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     subtitle: Text(
                       '${formatNumberWithCommas(item.price.toInt())} 원 x ${item.quantity}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.white,
                         fontFamily: 'NotoSansKR',
                       ),
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: () => removeFromCart(item),
+                      icon: const Icon(Icons.remove),
+                      onPressed: () {
+                        removeFromCart(item);
+                      },
                       color: Colors.white,
                     ),
                   );
@@ -261,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Text(
             '총 금액: ${formattedTotal} 원',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               color: Colors.white,
               fontFamily: 'NotoSansKR',
@@ -273,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text(
+                    title: const Text(
                       '주문 완료',
                       style: TextStyle(
                         fontFamily: 'NotoSansKR',
@@ -286,13 +285,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Text(
                           '${formattedTotal}원 주문이 완료되었습니다.',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'NotoSansKR',
                             color: Colors.black,
                             fontSize: 16,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '(잘못된 주문은 카운터에 문의 바랍니다.)',
                           style: TextStyle(
                             fontFamily: 'NotoSansKR',
@@ -310,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                           Navigator.of(context).pop();
                         },
-                        child: Text(
+                        child: const Text(
                           '확인',
                           style: TextStyle(
                             color: Colors.black,
@@ -324,7 +323,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               );
             },
-            child: Text(
+            child: const Text(
               '주문하기',
               style: TextStyle(
                 fontSize: 18,
