@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // 페이지 경로와 위젯을 연결하는 함수를 정의합니다.
-  Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
@@ -19,7 +19,10 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
             builder: (context) => AdminPage(title: "Admin Page"));
       case '/admin/payment':
-        return MaterialPageRoute(builder: (context) => PaymentPage());
+        return MaterialPageRoute(
+            builder: (context) => PaymentPage(
+                  tableNumber: settings.arguments as int,
+                ));
       default:
         return MaterialPageRoute(builder: (context) => NotFoundPage());
     }

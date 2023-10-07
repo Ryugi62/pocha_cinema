@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './payment_page.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({Key? key, required this.title}) : super(key: key);
@@ -8,34 +9,42 @@ class AdminPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
+        backgroundColor: Colors.black,
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'NotoSansKR', // Apply NotoSansKR font here
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // 분홍색 버튼 5개
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(5, (index) {
-                String buttonText =
-                    index != 4 ? 'B${index + 1}' : '마감'; // B5의 이름을 "마감"으로 변경
+                String buttonText = index != 4 ? 'B${index + 1}' : '마감';
                 return ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 243, 188, 206),
+                    primary: Colors.green,
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    shape:
-                        RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
                   ),
-                  onPressed: () {},
-                  child: Text(buttonText),
+                  onPressed: () => _showCurrentDate(context, index + 1),
+                  child: Text(
+                    buttonText,
+                    style: TextStyle(
+                      fontFamily: 'NotoSansKR', // Apply NotoSansKR font here
+                    ),
+                  ),
                 );
               }),
             ),
             SizedBox(height: 5),
-            // 1~18까지의 버튼을 6x3 그리드 형태로 배치
             for (var i = 0; i < 3; i++)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -46,10 +55,24 @@ class AdminPage extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(vertical: 12, horizontal: 25),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero),
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
-                    onPressed: () => _showCurrentDate(context, number),
-                    child: Text('$number'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PaymentPage(tableNumber: number),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      '$number',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansKR', // Apply NotoSansKR font here
+                      ),
+                    ),
                   );
                 }),
               ),
@@ -65,11 +88,26 @@ class AdminPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("번호 $number"),
-          content: Text("${now.year}-${now.month}-${now.day}"),
+          title: Text(
+            "번호 $number",
+            style: TextStyle(
+              fontFamily: 'NotoSansKR', // Apply NotoSansKR font here
+            ),
+          ),
+          content: Text(
+            "${now.year}-${now.month}-${now.day}",
+            style: TextStyle(
+              fontFamily: 'NotoSansKR', // Apply NotoSansKR font here
+            ),
+          ),
           actions: [
             TextButton(
-              child: Text("확인"),
+              child: Text(
+                "확인",
+                style: TextStyle(
+                  fontFamily: 'NotoSansKR', // Apply NotoSansKR font here
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },

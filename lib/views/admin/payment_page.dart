@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({Key? key}) : super(key: key);
+  final int tableNumber;
+
+  const PaymentPage({Key? key, required this.tableNumber}) : super(key: key);
 
   @override
   _PaymentPageState createState() => _PaymentPageState();
@@ -33,7 +35,14 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('결제 페이지'),
+        backgroundColor: Colors.black,
+        title: Text(
+          '${widget.tableNumber}관 결제 페이지',
+          style: TextStyle(
+            fontFamily: 'NotoSansKR',
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -41,7 +50,11 @@ class _PaymentPageState extends State<PaymentPage> {
             padding: EdgeInsets.all(16.0),
             child: Text(
               '금액: ₩$totalAmount',
-              style: TextStyle(fontSize: 24.0), // Increase the font size
+              style: TextStyle(
+                fontSize: 24.0,
+                color: Colors.white,
+                fontFamily: 'NotoSansKR',
+              ),
             ),
           ),
           Expanded(
@@ -55,8 +68,11 @@ class _PaymentPageState extends State<PaymentPage> {
                     children: [
                       Text(
                         item['name'] as String,
-                        style:
-                            TextStyle(fontSize: 18.0), // Increase the font size
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white,
+                          fontFamily: 'NotoSansKR',
+                        ),
                       ),
                       Row(
                         children: [
@@ -70,10 +86,16 @@ class _PaymentPageState extends State<PaymentPage> {
                                 }
                               });
                             },
+                            color: Colors.white,
                           ),
-                          Text('${item['quantity']}',
-                              style: TextStyle(
-                                  fontSize: 18.0)), // Increase the font size
+                          Text(
+                            '${item['quantity']}',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white,
+                              fontFamily: 'NotoSansKR',
+                            ),
+                          ),
                           IconButton(
                             icon: Icon(Icons.add),
                             onPressed: () {
@@ -82,6 +104,7 @@ class _PaymentPageState extends State<PaymentPage> {
                                 calculateTotalAmount();
                               });
                             },
+                            color: Colors.white,
                           ),
                         ],
                       ),
@@ -99,19 +122,37 @@ class _PaymentPageState extends State<PaymentPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text('입금을 확인하셨나요?'),
+                      title: Text(
+                        '입금을 확인하셨나요?',
+                        style: TextStyle(
+                          fontFamily: 'NotoSansKR',
+                          color: Colors.black,
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop('no');
                           },
-                          child: Text('No'),
+                          child: Text(
+                            'No',
+                            style: TextStyle(
+                              fontFamily: 'NotoSansKR',
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop('yes');
                           },
-                          child: Text('Yes'),
+                          child: Text(
+                            'Yes',
+                            style: TextStyle(
+                              fontFamily: 'NotoSansKR',
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
                       ],
                     );
@@ -122,7 +163,20 @@ class _PaymentPageState extends State<PaymentPage> {
                   }
                 });
               },
-              child: Text('결제 확인'),
+              child: Text(
+                '결제 확인',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontFamily: 'NotoSansKR',
+                  color: Colors.black,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                textStyle: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
             ),
           ),
         ],
