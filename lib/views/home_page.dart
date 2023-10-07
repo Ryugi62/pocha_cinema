@@ -34,14 +34,14 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: TextTheme(
           bodyText1: TextStyle(
-            fontFamily: 'NotoSansKR', // 폰트 패밀리 설정
+            fontFamily: 'NotoSansKR',
             color: Colors.white,
-            fontSize: 16, // 원하는 폰트 크기 설정
+            fontSize: 16,
           ),
           bodyText2: TextStyle(
-            fontFamily: 'NotoSansKR', // 폰트 패밀리 설정
+            fontFamily: 'NotoSansKR',
             color: Colors.white,
-            fontSize: 14, // 원하는 폰트 크기 설정
+            fontSize: 14,
           ),
         ),
       ),
@@ -70,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<MenuItem> cart = [];
   bool isCartVisible = false;
+  Color cardColor = Colors.white; // Initialize cardColor
 
   double calculateTotal() {
     double total = 0.0;
@@ -162,46 +163,61 @@ class _MyHomePageState extends State<MyHomePage> {
                 final item = menuItems[index];
                 return GestureDetector(
                   onTap: () {
+                    setState(() {
+                      // Change cardColor to indicate tap
+                      cardColor = Colors.white;
+                    });
                     addToCart(item);
                   },
                   child: Card(
-                    elevation: 3,
-                    color: Colors.black,
-                    child: Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(item.imagePath),
-                                fit: BoxFit.cover,
+                    elevation: cardColor == Colors.white
+                        ? 3
+                        : 0, // Add elevation effect
+                    color: cardColor,
+                    child: InkWell(
+                      splashColor: Colors.green,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(3),
+                                topRight: Radius.circular(3),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(item.imagePath),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            item.name,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontFamily: 'NotoSansKR',
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              item.name,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontFamily: 'NotoSansKR',
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            '${formatNumberWithCommas(item.price.toInt())} 원',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontFamily: 'NotoSansKR',
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${formatNumberWithCommas(item.price.toInt())} 원',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontFamily: 'NotoSansKR',
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -274,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       '주문 완료',
                       style: TextStyle(
                         fontFamily: 'NotoSansKR',
-                        color: Colors.black, // 글자 색상을 검정색으로 변경
+                        color: Colors.black,
                       ),
                     ),
                     content: Column(
@@ -285,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           '${formattedTotal}원 주문이 완료되었습니다.',
                           style: TextStyle(
                             fontFamily: 'NotoSansKR',
-                            color: Colors.black, // 글자 색상을 검정색으로 변경
+                            color: Colors.black,
                             fontSize: 16,
                           ),
                         ),
@@ -293,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           '(잘못된 주문은 카운터에 문의 바랍니다.)',
                           style: TextStyle(
                             fontFamily: 'NotoSansKR',
-                            color: Colors.black, // 글자 색상을 검정색으로 변경
+                            color: Colors.black,
                             fontSize: 14,
                           ),
                         ),
@@ -310,7 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: Text(
                           '확인',
                           style: TextStyle(
-                            color: Colors.black, // 버튼 텍스트 색상을 검정색으로 변경
+                            color: Colors.black,
                             fontSize: 18,
                             fontFamily: 'NotoSansKR',
                           ),
@@ -329,8 +345,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              primary: Colors.green,
-              onPrimary: Colors.white,
+              primary: Colors.white,
+              onPrimary: Colors.black87,
               minimumSize: const Size(double.infinity, 50),
             ),
           ),
