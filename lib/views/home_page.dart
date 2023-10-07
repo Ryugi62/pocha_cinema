@@ -65,19 +65,15 @@ class _MyHomePageState extends State<MyHomePage> {
     MenuItem('피자', 15000, 'pizza.jpg'),
     MenuItem('햄버거', 10000, 'hamburger.jpg'),
     MenuItem('파스타', 12000, 'pasta.jpg'),
-    // 다른 음식 항목 추가
+    // Add more menu items here
   ];
 
   final List<MenuItem> cart = [];
   bool isCartVisible = false;
-  Color cardColor = Colors.white; // Initialize cardColor
+  Color cardColor = Colors.white;
 
   double calculateTotal() {
-    double total = 0.0;
-    for (var item in cart) {
-      total += item.price * item.quantity;
-    }
-    return total;
+    return cart.fold(0.0, (total, item) => total + item.price * item.quantity);
   }
 
   void toggleCartVisibility() {
@@ -86,20 +82,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  MenuItem findCartItem(MenuItem item) {
-    final cartItem = cart.firstWhere(
+  MenuItem? findCartItem(MenuItem item) {
+    return cart.firstWhere(
       (cartItem) => cartItem.name == item.name,
       orElse: () => MenuItem('', 0.0, ''),
     );
-    return cartItem;
   }
 
   void addToCart(MenuItem item) {
     final existingItem = findCartItem(item);
 
-    if (existingItem.name != '') {
+    if (existingItem?.name != '') {
       setState(() {
-        existingItem.addToCart();
+        existingItem?.addToCart();
       });
     } else {
       setState(() {
@@ -124,15 +119,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String formatNumberWithCommas(int number) {
-    String formatted = number.toString();
-    if (number >= 1000) {
-      final RegExp regex = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
-      formatted = formatted.replaceAllMapped(
-        regex,
-        (Match match) => '${match[1]},',
-      );
-    }
-    return formatted;
+    return number.toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match match) => '${match[1]},',
+        );
   }
 
   @override
@@ -164,15 +154,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      // Change cardColor to indicate tap
                       cardColor = Colors.white;
                     });
                     addToCart(item);
                   },
                   child: Card(
-                    elevation: cardColor == Colors.white
-                        ? 3
-                        : 0, // Add elevation effect
+                    elevation: cardColor == Colors.white ? 3 : 0,
                     color: cardColor,
                     child: InkWell(
                       splashColor: Colors.green,
