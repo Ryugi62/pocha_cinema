@@ -3,35 +3,19 @@ import './views/home_page.dart';
 import './views/404_page.dart';
 import './views/admin/admin_page.dart';
 import './views/admin/payment_page.dart';
+import './views/login_page.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  bool isLoggedIn = false; // 로그인 상태를 저장하는 변수
 
-  // 페이지 경로와 위젯을 연결하는 함수를 정의합니다.
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(
-            builder: (context) => const MyHomePage(title: 'Pocha Cinema 🍿'));
-      case '/admin':
-        return MaterialPageRoute(
-            builder: (context) => AdminPage(title: "Admin Page"));
-      case '/admin/payment':
-        return MaterialPageRoute(
-            builder: (context) => PaymentPage(
-                  tableNumber: settings.arguments as int,
-                ));
-      default:
-        return MaterialPageRoute(builder: (context) => NotFoundPage());
-    }
+  void updateLoginStatus(bool status) {
+    isLoggedIn = status;
   }
 
-// Could not find a set of Noto fonts to display all missing characters. Please add a font asset for
-// the missing characters. See: https://flutter.dev/docs/cookbook/design/fonts
-  // 앱 테마 설정과 라우팅 설정을 별도의 함수로 분리합니다.
-  MaterialApp _buildApp(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pocha Cinema',
       theme: ThemeData(
@@ -39,26 +23,38 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
         textTheme: TextTheme(
           bodyText1: TextStyle(
-            fontFamily: 'NotoSansKR', // 폰트 패밀리 설정
+            fontFamily: 'NotoSansKR',
             color: Colors.white,
-            fontSize: 16, // 원하는 폰트 크기 설정
+            fontSize: 16,
           ),
           bodyText2: TextStyle(
-            fontFamily: 'NotoSansKR', // 폰트 패밀리 설정
+            fontFamily: 'NotoSansKR',
             color: Colors.white,
-            fontSize: 14, // 원하는 폰트 크기 설정
+            fontSize: 14,
           ),
-          // 다른 텍스트 스타일들도 설정 가능
         ),
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      onGenerateRoute: generateRoute,
-    );
-  }
+      routes: {
+        '/': (context) => const MyHomePage(title: 'Pocha Cinema 🍿'),
+        '/admin': (context) => isLoggedIn
+            ? AdminPage(title: "관리자 페이지")
+            : LoginPage(updateLoginStatus), // 로그인 상태에 따라 페이지를 다르게 표시
+        '/admin/payment/:tableNumber': (context) {
+          // '/admin/payment/:tableNumber' 경로로 이동하면 파라미터를 추출
+          final Map<String, dynamic> params = ModalRoute.of(context)!
+              .settings
+              .arguments as Map<String, dynamic>;
 
-  @override
-  Widget build(BuildContext context) {
-    return _buildApp(context);
+          print(params);
+
+          return PaymentPage(
+            tableNumber: int.parse(params['tableNumber']),
+          );
+        },
+        '/404': (context) => NotFoundPage(),
+      },
+    );
   }
 }
