@@ -1,10 +1,12 @@
+// ./main.dart
+
 import 'package:flutter/material.dart';
 import './views/home_page.dart';
 import './views/404_page.dart';
 import './views/admin/admin_page.dart';
 import './views/admin/payment_page.dart';
 import './views/login_page.dart';
-import './views/order_page.dart'; // order_page.dart 파일을 import
+import './views/admin/order_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -51,11 +53,9 @@ class MyApp extends StatelessWidget {
             tableNumber: int.parse(params['tableNumber']),
           );
         },
-        '/order': (context) => OrderPage(), // 새로운 페이지를 라우트에 추가
+        '/admin/order': (context) => OrderPage(),
         '/404': (context) => NotFoundPage(),
       },
     );
   }
 }
-
-// 나머지 코드는 유지됩니다.

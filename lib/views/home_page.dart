@@ -44,6 +44,8 @@ class MyApp extends StatelessWidget {
             fontSize: 14,
           ),
         ),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'ICE-POCHA'),
@@ -306,6 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onPressed: () {
                           setState(() {
                             cart.clear();
+                            isCartVisible = false; // 주문 완료 후 장바구니 닫기
                           });
                           Navigator.of(context).pop();
                         },

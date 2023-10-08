@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TextFormField(
               controller: _usernameController,
-              style: TextStyle(color: Colors.white), // 텍스트 색상 설정
+              style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: '아이디',
                 labelStyle: TextStyle(
@@ -69,9 +69,14 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.white,
                 ),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // 테두리 색상 설정
+                  borderSide: BorderSide(color: Colors.white),
                 ),
               ),
+              onEditingComplete: () {
+                // 아이디 입력 필드에서 엔터를 눌렀을 때 비밀번호 입력 필드로 이동
+                FocusScope.of(context).nextFocus();
+              },
+              autofocus: true, // 아이디 입력 필드가 화면이 로드될 때 포커스를 받도록 설정
             ),
             SizedBox(height: 10),
             TextFormField(
@@ -88,6 +93,10 @@ class _LoginPageState extends State<LoginPage> {
                   borderSide: BorderSide(color: Colors.white), // 테두리 색상 설정
                 ),
               ),
+              onEditingComplete: () {
+                // 비밀번호 입력 필드에서 엔터를 눌렀을 때 로그인 수행
+                _login(context);
+              },
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -109,4 +118,19 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.black, // 배경색 설정
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: LoginPage((isLoggedIn) {
+      // 로그인 상태 업데이트 함수
+      if (isLoggedIn) {
+        // 로그인 성공한 경우
+        print('로그인 성공');
+      } else {
+        // 로그인 실패 또는 로그아웃한 경우
+        print('로그인 실패 또는 로그아웃');
+      }
+    }),
+  ));
 }
