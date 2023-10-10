@@ -194,19 +194,19 @@ class _OrderPageState extends State<OrderPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _addOrder({
-            'tableNumber': orders.length + 1,
-            'orders': [
-              [false, '음식1', '2 개'],
-              [false, '음식2', '1 개'],
-              [false, '음식3', '5 개']
-            ],
-          });
-        },
-        child: Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     _addOrder({
+      //       'tableNumber': orders.length + 1,
+      //       'orders': [
+      //         [false, '음식1', '2 개'],
+      //         [false, '음식2', '1 개'],
+      //         [false, '음식3', '5 개']
+      //       ],
+      //     });
+      //   },
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
 }
