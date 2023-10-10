@@ -57,6 +57,26 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
             ),
           ),
+          ElevatedButton(
+            onPressed: () {
+              // 이 버튼을 누르면 주문 변경 화면으로 이동하도록 코드를 추가하세요.
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => OrderChangePage()));
+            },
+            child: Text(
+              '주문 변경',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontFamily: 'NotoSansKR',
+                color: Colors.black,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              textStyle: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: orderedItems.length,
