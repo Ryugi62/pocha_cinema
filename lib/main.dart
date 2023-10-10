@@ -64,7 +64,9 @@ class MyApp extends StatelessWidget {
         // '/admin/order': (context) => OrderPage(),
 
         // /admin 으로 시작하는 모든 경로는 로그인이 필요하다.
-        '/admin': (context) => LoginPage(updateLoginStatus),
+        '/admin': (context) => isLoggedIn
+            ? AdminPage(title: "관리자 페이지")
+            : LoginPage(updateLoginStatus),
         '/admin/payment/:tableNumber': (context) {
           final Map<String, dynamic> params = ModalRoute.of(context)!
               .settings
