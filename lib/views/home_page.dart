@@ -313,11 +313,29 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                     actions: [
-                      TextButton(
+                      ElevatedButton(
+                        onPressed: () {
+                          // 취소 버튼을 눌렀을 때 수행할 동작
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          '취소',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontFamily: 'NotoSansKR',
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          onPrimary: Colors.black87,
+                        ),
+                      ),
+                      ElevatedButton(
                         onPressed: () {
                           setState(() {
                             cart.clear();
-                            isCartVisible = false; // 주문 완료 후 장바구니 닫기
+                            isCartVisible = false;
                           });
                           Navigator.of(context).pop();
                         },
@@ -328,6 +346,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontSize: 18,
                             fontFamily: 'NotoSansKR',
                           ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          onPrimary: Colors.black87,
                         ),
                       ),
                     ],
