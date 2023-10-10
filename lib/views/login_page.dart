@@ -1,4 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() {
+  runApp(MaterialApp(
+    home: LoginPage((isLoggedIn) {
+      // 로그인 상태 업데이트 함수
+      if (isLoggedIn) {
+        // 로그인 성공한 경우
+        print('로그인 성공');
+      } else {
+        // 로그인 실패 또는 로그아웃한 경우
+        print('로그인 실패 또는 로그아웃');
+      }
+    }),
+  ));
+}
 
 class LoginPage extends StatefulWidget {
   final Function(bool) updateLoginStatus; // 로그인 상태를 업데이트하는 함수를 받습니다.
@@ -12,31 +29,51 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login(BuildContext context) {
+  void _login(BuildContext context) async {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    // 여기에서 username과 password를 확인하여 관리자 여부를 판단
-    if (username == 'admin' && password == 'password') {
-      // 관리자로 로그인 성공한 경우
-      // 상태 업데이트 함수 호출
-      widget.updateLoginStatus(true);
-      Navigator.of(context).pushNamed('/admin'); // 관리자 페이지로 이동
-    } else {
-      // 로그인 실패한 경우
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('로그인 실패'),
-          content: Text('아이디 또는 비밀번호가 올바르지 않습니다.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('확인'),
-            ),
-          ],
-        ),
-      );
+    final url = Uri.parse('http://192.168.1.197:8000/api/login');
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    final body = jsonEncode(
+      {
+        'username': username,
+        'pwd': password,
+      },
+    );
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        // 로그인 성공한 경우
+        widget.updateLoginStatus(true);
+
+        print('response headers: ${response.headers}');
+        print("cookie: ${response.headers['set-cookie']}");
+
+        Navigator.of(context).pushNamed('/admin'); // 관리자 페이지로 이동
+      } else {
+        // 로그인 실패한 경우
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('로그인 실패'),
+            content: Text('아이디 또는 비밀번호가 올바르지 않습니다.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('확인'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // 요청 실패한 경우
+      print('HTTP 요청 실패: $e');
     }
   }
 
@@ -118,19 +155,4 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.black, // 배경색 설정
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: LoginPage((isLoggedIn) {
-      // 로그인 상태 업데이트 함수
-      if (isLoggedIn) {
-        // 로그인 성공한 경우
-        print('로그인 성공');
-      } else {
-        // 로그인 실패 또는 로그아웃한 경우
-        print('로그인 실패 또는 로그아웃');
-      }
-    }),
-  ));
 }

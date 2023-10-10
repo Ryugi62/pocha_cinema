@@ -7,6 +7,7 @@ import './views/admin/admin_page.dart';
 import './views/admin/payment_page.dart';
 import './views/login_page.dart';
 import './views/admin/order_page.dart';
+import 'dart:html';
 
 void main() => runApp(MyApp());
 
@@ -40,20 +41,43 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => const MyHomePage(title: 'Pocha Cinema 🍿'),
-        '/admin': (context) => isLoggedIn
-            ? AdminPage(title: "관리자 페이지")
-            : LoginPage(updateLoginStatus),
+        '/': (context) {
+          var uri = Uri.dataFromString(
+              window.location.href); //converts string to a uri
+          Map<String, String> params =
+              uri.queryParameters; // query parameters automatically populated
+
+          return MyHomePage(title: '포차시네마', table_id: params['tableId']);
+        },
+        // '/admin': (context) => isLoggedIn
+        //     ? AdminPage(title: "관리자 페이지")
+        //     : LoginPage(updateLoginStatus),
+        // '/admin/payment/:tableNumber': (context) {
+        //   final Map<String, dynamic> params = ModalRoute.of(context)!
+        //       .settings
+        //       .arguments as Map<String, dynamic>;
+
+        //   return PaymentPage(
+        //     tableNumber: int.parse(params['tableNumber']),
+        //   );
+        // },
+        // '/admin/order': (context) => OrderPage(),
+
+        // /admin 으로 시작하는 모든 경로는 로그인이 필요하다.
+        '/admin': (context) => LoginPage(updateLoginStatus),
         '/admin/payment/:tableNumber': (context) {
           final Map<String, dynamic> params = ModalRoute.of(context)!
               .settings
               .arguments as Map<String, dynamic>;
 
-          return PaymentPage(
-            tableNumber: int.parse(params['tableNumber']),
-          );
+          return isLoggedIn
+              ? PaymentPage(
+                  tableNumber: int.parse(params['tableNumber']),
+                )
+              : LoginPage(updateLoginStatus);
         },
-        '/admin/order': (context) => OrderPage(),
+        '/admin/order': (context) =>
+            isLoggedIn ? OrderPage() : LoginPage(updateLoginStatus),
         '/404': (context) => NotFoundPage(),
       },
     );

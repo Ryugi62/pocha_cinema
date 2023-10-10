@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MenuItem {
   final String name;
@@ -54,15 +56,20 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, this.table_id})
+      : super(key: key);
 
   final String title;
+  final String? table_id; // 추가된 table_id 변수
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // 다음과 같이 table_id를 추가하고 초기화합니다.
+  String? table_id;
+
   final List<MenuItem> menuItems = [
     MenuItem('콩불 中', 16000, 'Kong-bul-small.jpg'),
     MenuItem('콩불 大', 20000, 'Kong-bul-big.jpg'),
@@ -279,83 +286,152 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ElevatedButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text(
-                      '주문 완료',
-                      style: TextStyle(
-                        fontFamily: 'NotoSansKR',
-                        color: Colors.black,
-                      ),
-                    ),
-                    content: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${formattedTotal}원 주문이 완료되었습니다.',
-                          style: const TextStyle(
-                            fontFamily: 'NotoSansKR',
-                            color: Colors.black,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const Text(
-                          '(잘못된 주문은 카운터에 문의 바랍니다.)',
+              // 주문하기 버튼을 눌렀을 때 HTTP 요청을 보냄
+              final url = Uri.parse(
+                  'http://icepocha.vip:8000/api/inmarket/order?table_id=${widget.table_id}');
+
+              final orderData = cart.map((item) {
+                return {
+                  // menu_id는 menu아이템의 index + 1를 보내고싶어.
+                  // item.name과 일치하는 menuItems의 index를 찾아서 + 1을 해줘야함.
+                  'menu_id': menuItems
+                          .indexWhere((element) => element.name == item.name) +
+                      1,
+                  'quantity': item.quantity,
+                };
+              }).toList();
+
+              // orderData 배열로 감싸기
+              http
+                  .post(url,
+                      headers: {'Content-Type': 'application/json'},
+                      body: jsonEncode({
+                        'order_items': orderData,
+                      }))
+                  .then((response) {
+                if (response.statusCode == 202) {
+                  // 성공적으로 주문이 완료된 경우
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text(
+                          '주문 완료',
                           style: TextStyle(
                             fontFamily: 'NotoSansKR',
                             color: Colors.black,
-                            fontSize: 14,
                           ),
                         ),
-                      ],
-                    ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // 취소 버튼을 눌렀을 때 수행할 동작
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          '취소',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: 'NotoSansKR',
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${formattedTotal}원 주문이 완료되었습니다.',
+                              style: const TextStyle(
+                                fontFamily: 'NotoSansKR',
+                                color: Colors.black,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Text(
+                              '(잘못된 주문은 카운터에 문의 바랍니다.)',
+                              style: TextStyle(
+                                fontFamily: 'NotoSansKR',
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // 취소 버튼을 눌렀을 때 수행할 동작
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              '취소',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontFamily: 'NotoSansKR',
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.black87,
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          onPrimary: Colors.black87,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            cart.clear();
-                            isCartVisible = false;
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          '확인',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: 'NotoSansKR',
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                cart.clear();
+                                isCartVisible = false;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              '확인',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontFamily: 'NotoSansKR',
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.black87,
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          onPrimary: Colors.black87,
-                        ),
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   );
-                },
-              );
+                } else {
+                  // 주문에 실패한 경우
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text(
+                          '주문 실패',
+                          style: TextStyle(
+                            fontFamily: 'NotoSansKR',
+                            color: Colors.black,
+                          ),
+                        ),
+                        content: Text(
+                          '주문을 처리하는 동안 오류가 발생했습니다.',
+                          style: TextStyle(
+                            fontFamily: 'NotoSansKR',
+                            color: Colors.black,
+                          ),
+                        ),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              '확인',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontFamily: 'NotoSansKR',
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              });
             },
             child: const Text(
               '주문하기',
