@@ -64,9 +64,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<MenuItem> menuItems = [
-    MenuItem('피자', 15000, 'pizza.jpg'),
-    MenuItem('햄버거', 10000, 'hamburger.jpg'),
-    MenuItem('파스타', 12000, 'pasta.jpg'),
+    MenuItem('콩불 中', 16000, 'Kong-bul-small.jpg'),
+    MenuItem('콩불 大', 20000, 'Kong-bul-big.jpg'),
+    MenuItem('대패숙주볶음', 17000, 'Spicy-pork-belly-stir-fry.jpg'),
+    MenuItem('간장비빔국수', 10000, 'SoySauce-Bibim-Guksu.jpg'),
+    MenuItem('삼겹비빔면', 10000, 'PorkBelly-Bibim-Noodles.jpg'),
+    MenuItem('오뎅탕', 12000, 'FishcakeSoup.jpg'),
+    MenuItem('소시지', 10000, 'sausage.jpeg'),
+    MenuItem('감자콤보', 14000, 'potato-combo.jpeg'),
+    MenuItem('물', 1000, 'water.jpeg'),
+    MenuItem('콜라', 2000, 'pepsi.jpeg'),
+    MenuItem('사이다', 2000, 'cider.jpeg'),
+    MenuItem('직원 부르기', 0, 'people.jpg'),
     // Add more menu items here
   ];
 
@@ -218,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Card(
               color: Colors.black,
               child: ListView.builder(
-                itemCount: cart.length > 3 ? 3 : cart.length,
+                itemCount: cart.length,
                 itemBuilder: (context, index) {
                   final item = cart[index];
                   return ListTile(
